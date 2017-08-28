@@ -2164,19 +2164,15 @@ static HRESULT WINAPI ddraw1_FlipToGDISurface(IDirectDraw *iface)
  *****************************************************************************/
 static HRESULT WINAPI ddraw7_WaitForVerticalBlank(IDirectDraw7 *iface, DWORD Flags, HANDLE event)
 {
-    static BOOL hide;
-
     TRACE("iface %p, flags %#x, event %p.\n", iface, Flags, event);
 
-    /* This function is called often, so print the fixme only once */
-    if(!hide)
-    {
-        FIXME("iface %p, flags %#x, event %p stub!\n", iface, Flags, event);
-        hide = TRUE;
-    }
+    if (Flags & DDWAITVB_BLOCKBEGINEVENT)
+    	return DDERR_UNSUPPORTED;
+
+    //FIXME("iface %p, flags %#x, event %p stub!\n", iface, Flags, event);
 
     /* MSDN says DDWAITVB_BLOCKBEGINEVENT is not supported */
-    if(Flags & DDWAITVB_BLOCKBEGINEVENT)
+    if (Flags & DDWAITVB_BLOCKBEGINEVENT)
         return DDERR_UNSUPPORTED; /* unchecked */
 
     return DD_OK;
@@ -2236,47 +2232,32 @@ static HRESULT WINAPI ddraw7_GetScanLine(IDirectDraw7 *iface, DWORD *Scanline)
 
 static HRESULT WINAPI ddraw4_GetScanLine(IDirectDraw4 *iface, DWORD *line)
 {
-    struct ddraw *ddraw = impl_from_IDirectDraw4(iface);
-
     TRACE("iface %p, line %p.\n", iface, line);
-
-    return ddraw7_GetScanLine(&ddraw->IDirectDraw7_iface, line);
+    return ddraw7_GetScanLine(&impl_from_IDirectDraw4(iface)->IDirectDraw7_iface, line);
 }
 
 static HRESULT WINAPI ddraw2_GetScanLine(IDirectDraw2 *iface, DWORD *line)
 {
-    struct ddraw *ddraw = impl_from_IDirectDraw2(iface);
-
     TRACE("iface %p, line %p.\n", iface, line);
-
-    return ddraw7_GetScanLine(&ddraw->IDirectDraw7_iface, line);
+    return ddraw7_GetScanLine(&impl_from_IDirectDraw2(iface)->IDirectDraw7_iface, line);
 }
 
 static HRESULT WINAPI ddraw1_GetScanLine(IDirectDraw *iface, DWORD *line)
 {
-    struct ddraw *ddraw = impl_from_IDirectDraw(iface);
-
     TRACE("iface %p, line %p.\n", iface, line);
-
-    return ddraw7_GetScanLine(&ddraw->IDirectDraw7_iface, line);
+    return ddraw7_GetScanLine(&impl_from_IDirectDraw(iface)->IDirectDraw7_iface, line);
 }
 
 static HRESULT WINAPI ddraw7_TestCooperativeLevel(IDirectDraw7 *iface)
 {
-    struct ddraw *ddraw = impl_from_IDirectDraw7(iface);
-
     TRACE("iface %p.\n", iface);
-
-    return ddraw->device_state == DDRAW_DEVICE_STATE_LOST ? DDERR_NOEXCLUSIVEMODE : DD_OK;
+    return impl_from_IDirectDraw7(iface)->device_state == DDRAW_DEVICE_STATE_LOST ? DDERR_NOEXCLUSIVEMODE : DD_OK;
 }
 
 static HRESULT WINAPI ddraw4_TestCooperativeLevel(IDirectDraw4 *iface)
 {
-    struct ddraw *ddraw = impl_from_IDirectDraw4(iface);
-
     TRACE("iface %p.\n", iface);
-
-    return ddraw7_TestCooperativeLevel(&ddraw->IDirectDraw7_iface);
+    return ddraw7_TestCooperativeLevel(&impl_from_IDirectDraw4(iface)->IDirectDraw7_iface);
 }
 
 /*****************************************************************************
