@@ -870,7 +870,7 @@ static void convert_p8_uint_b8g8r8a8_unorm(const BYTE *src, unsigned int src_pit
     if (!palette)
     {
         /* FIXME: This should probably use the system palette. */
-        FIXME("P8 surface loaded without a palette.\n");
+        FIXME("8-bit (256) palette-indexed color surface (p8 surface) loaded without a palette.\n");
 
         for (y = 0; y < height; ++y)
         {
@@ -887,10 +887,8 @@ static void convert_p8_uint_b8g8r8a8_unorm(const BYTE *src, unsigned int src_pit
         for (x = 0; x < width; ++x)
         {
             BYTE src_color = src_row[x];
-            dst_row[x] = 0xff000000
-                    | (palette->colors[src_color].rgbRed << 16)
-                    | (palette->colors[src_color].rgbGreen << 8)
-                    | palette->colors[src_color].rgbBlue;
+            const RGBQUAD *p = &palette->colors[src_color];
+            dst_row[x] = 0xff000000 | (p->rgbRed << 16) | (p->rgbGreen << 8) | p->rgbBlue;
         }
     }
 }
