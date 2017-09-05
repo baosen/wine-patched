@@ -859,9 +859,10 @@ static BOOL color_in_range(const struct wined3d_color_key *color_key, DWORD colo
             && color <= color_key->color_space_high_value;
 }
 
+// Convert 8-bit (256 color) palette-indexed bytes to b8g8r8a8.
 static void convert_p8_uint_b8g8r8a8_unorm(const BYTE *src, unsigned int src_pitch,
-        BYTE *dst, unsigned int dst_pitch, unsigned int width, unsigned int height,
-        const struct wined3d_palette *palette, const struct wined3d_color_key *color_key)
+                                           BYTE       *dst, unsigned int dst_pitch, unsigned int width, unsigned int height,
+                                           const struct wined3d_palette *palette, const struct wined3d_color_key *color_key)
 {
     const BYTE *src_row;
     unsigned int x, y;
@@ -873,9 +874,7 @@ static void convert_p8_uint_b8g8r8a8_unorm(const BYTE *src, unsigned int src_pit
         FIXME("8-bit (256) palette-indexed color surface (p8 surface) loaded without a palette.\n");
 
         for (y = 0; y < height; ++y)
-        {
             memset(&dst[dst_pitch * y], 0, width * 4);
-        }
 
         return;
     }
